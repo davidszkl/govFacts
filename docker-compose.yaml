@@ -2,29 +2,31 @@ version: '3.8'
 
 services:
   db:
-    image: postgres:13
+    image: postgres:latest
     environment:
-      POSTGRES_USER: energy_monitor
+      POSTGRES_USER: gov_facts
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
-      POSTGRES_DB: energy_monitor
-    ports:
-      - 5432:5432
+      POSTGRES_DB: gov_facts
     secrets:
       - db_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+    - govfacts_network
 
   web:
     build:
-      context: ./application
+      context: ./backend
     ports:
-      - 5000:5000
+      - 8000:8000
     secrets:
       - db_password
     environment:
       POSTGRES_HOST: db
-      POSTGRES_DB: energy_monitor
-      POSTGRES_USER: energy_monitor
+      POSTGRES_DB: gov_facts
+      POSTGRES_USER: gov_facts
+    networks:
+      - govfacts_network
     depends_on:
       - db
 
@@ -34,3 +36,7 @@ secrets:
 
 volumes:
   postgres_data:
+
+networks:
+  govfacts_network:
+    driver: bridge
