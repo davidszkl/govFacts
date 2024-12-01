@@ -1,0 +1,11 @@
+---
+services:
+    devcontainer:
+        image: mcr.microsoft.com/devcontainers/python:1-3.12-bullseye
+        networks:
+            - dev
+        volumes:
+            - ..:/workspaces:cached
+        command: bash -c "sleep infinity"
+networks:
+    dev:
