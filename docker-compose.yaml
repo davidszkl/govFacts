@@ -16,12 +16,14 @@ services:
 
   web:
     build:
-      context: ./backend
+      context: ./app
     ports:
       - 8000:8000
+      - 5678:5678
     secrets:
       - db_password
     environment:
+      DEBUG: "True"
       POSTGRES_HOST: db
       POSTGRES_DB: gov_facts
       POSTGRES_USER: gov_facts
