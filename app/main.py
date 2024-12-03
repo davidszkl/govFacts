@@ -1,21 +1,15 @@
+from base.DataSource import DataSource
+from datasources import *
 from dotenv import load_dotenv
 from fastapi import FastAPI
 import os
-import requests
 
 app = FastAPI()
+data = []
 
 @app.get("/")
 def home():
-    api_key = os.getenv('API_KEY')
-    url = f"https://api.congress.gov/v3/bill?format=json&api_key={api_key}"
-    
-    response = requests.get(url)
-    
-    if response.status_code == 200:
-        return response.json()
-    else:
-        return {'error': 'Failed to fetch data from the external API'}
+    return data
 
 def read_secret(secret_name):
     secret_path = f"/run/secrets/{secret_name}"
@@ -33,5 +27,12 @@ DATABASE = {
     'PORT': '5432'
 }
 
+def loadDataSources():
+    global data
+    for dataSource in DataSource.__subclasses__():
+        instance = dataSource()
+        data = instance.getData()
+
 if __name__ == "main":
     load_dotenv()
+    loadDataSources()

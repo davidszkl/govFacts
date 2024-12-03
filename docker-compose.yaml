@@ -23,7 +23,7 @@ services:
     secrets:
       - db_password
     environment:
-      DEBUG: "True"
+      DEBUG: "False"
       POSTGRES_HOST: db
       POSTGRES_DB: gov_facts
       POSTGRES_USER: gov_facts
