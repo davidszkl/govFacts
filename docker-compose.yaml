@@ -1,8 +1,8 @@
-version: '3.8'
-
+---
+name: govfact
 services:
   db:
-    image: postgres:latest
+    image: postgres:17.2
     environment:
       POSTGRES_USER: gov_facts
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
