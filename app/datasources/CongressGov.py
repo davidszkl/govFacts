@@ -1,14 +1,15 @@
-from base.DataSource import DataSource
-from base.RawData import RawData
-from models.PoliticalEvent import PoliticalEvent
-import json
 import os
 import requests
+
+from main import state
+from base.DataSource import DataSource
+from base.RawData import RawData
+from models.EventType import EventType
+from models.PoliticalEvent import PoliticalEvent
 
 class CongressGov(DataSource):
     def __init__(self) -> None:
         super().__init__()
-        self.entity = "USA"
 
     def fetch(self):
         api_key = os.getenv('CONGRESS_GOV_API_KEY')
@@ -27,4 +28,14 @@ class CongressGov(DataSource):
         if rawData.error:
             return rawData.error
         jsonData = rawData.data
-        return [PoliticalEvent(bill["title"], "USA", bill["type"]) for bill in jsonData["bills"]]
+        entity_id = state.db.static_data["entity"]["USA"].id
+        new_bill_types = set(bill["type"] for bill in jsonData["bills"] if bill["type"] not in state.db.static_data["event_type"])
+        state.db.create([EventType(name=type_name) for type_name in new_bill_types])
+        return [
+            PoliticalEvent(
+                name=bill["title"],
+                entity_id=entity_id,
+                type_id=state.db.static_data["event_type"][bill["type"]].id,
+                external_id=bill["number"]
+            ) for bill in jsonData["bills"]
+        ]
